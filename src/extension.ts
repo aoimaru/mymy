@@ -19,7 +19,6 @@ const stateChanged = new EventEmitter(); // 🔥 状態変更イベント (useEf
 
 // 状態変更のイベントを検知
 stateChanged.on("update", () => {
-	console.log("state is changed")
 	const editor = vscode.window.activeTextEditor;
     if (editor) applyDecorations(editor);
 });
@@ -44,7 +43,6 @@ const loadMemo = () => {
 const watchStorage = async () => {
 	if (watcher) {
         await watcher.close();
-        console.log("🛑 既存の watcher を停止");
     }
 	// 監視の開始
 	watcher = chokidar.watch(STORAGE_PATH, {
@@ -58,7 +56,6 @@ const watchStorage = async () => {
 			console.log(`✅ ファイルが作成されました: ${filePath}`)
 		})
 		.on('change', (filePath) => {
-			console.log(`✏️ ファイルが変更されました: ${filePath}`)
 			const content = fs.readFileSync(filePath, "utf8"); // TODO ファイル読み込みの非同期化
 			const name = path.basename(filePath)
 			setMemo(() => {
@@ -67,7 +64,6 @@ const watchStorage = async () => {
 			console.log(memo)
 		})
 		.on('unlink', (filePath) => {
-			console.log(`❌ ファイルが削除されました: ${filePath}`)
 			const name = path.basename(filePath)
 			setMemo(() => {
 				memo.delete(name)
@@ -96,7 +92,6 @@ const setUp = async () => {
 	try {
 		await promiseFs.mkdir(STORAGE_PATH, { recursive: true });
 	} catch (error) {
-		console.log("e")
 		console.error("Error creating directory:", error);
 	}
 }
@@ -148,7 +143,6 @@ $
 
 	// メモファイルが存在しない場合は空のファイルを作成
     if (!fs.existsSync(contentPath)) {
-		console.log("ここは？")
         await fs.promises.writeFile(contentPath, defaultContent, "utf8");
     }
 
@@ -160,21 +154,16 @@ $
 
 
 const editDocumentation = async (args: any) => {
-	console.log("edit...")
 	const editor = vscode.window.activeTextEditor;
 	if (!editor) return;
 	// argsでlineプロパティを取得
 	const line = args?.line ?? editor.selection.active.line;
     const lineText = editor.document.lineAt(line).text;
-	console.log("lineText:", lineText)
     const lineHash = getSha1(lineText);
 	const contentPath = path.join(STORAGE_PATH, lineHash);
 
-	console.log("contentPath:", contentPath)
-
 	// 右側のエディタで開く
     const doc = await vscode.workspace.openTextDocument(contentPath);
-	console.log("doc:", doc)
     await vscode.window.showTextDocument(doc, { viewColumn: vscode.ViewColumn.Beside });
 
 }
@@ -212,7 +201,6 @@ const applyDecorations = (editor: vscode.TextEditor) => {
 		const memoContent = memo.get(lineHash)
 
         if (memoContent) {
-			console.log("memoContent:", memoContent)
             const range = new vscode.Range(
                 new vscode.Position(i, line.range.end.character),
                 new vscode.Position(i, line.range.end.character)
