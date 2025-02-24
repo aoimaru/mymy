@@ -142,8 +142,9 @@ const createDocumentation = async (args: any) => {
 $  
 \`\`\`
 
-[✏️ 編集する](command:mymy.editDocumentation)
+[✏️ 編集する](command:mymy.editDocumentation?${encodeURIComponent(JSON.stringify({ line: line }))})
 `;
+
 
 	// メモファイルが存在しない場合は空のファイルを作成
     if (!fs.existsSync(contentPath)) {
@@ -165,6 +166,7 @@ const editDocumentation = async (args: any) => {
 	// argsでlineプロパティを取得
 	const line = args?.line ?? editor.selection.active.line;
     const lineText = editor.document.lineAt(line).text;
+	console.log("lineText:", lineText)
     const lineHash = getSha1(lineText);
 	const contentPath = path.join(STORAGE_PATH, lineHash);
 
@@ -172,6 +174,7 @@ const editDocumentation = async (args: any) => {
 
 	// 右側のエディタで開く
     const doc = await vscode.workspace.openTextDocument(contentPath);
+	console.log("doc:", doc)
     await vscode.window.showTextDocument(doc, { viewColumn: vscode.ViewColumn.Beside });
 
 }
