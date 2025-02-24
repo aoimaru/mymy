@@ -18,6 +18,14 @@
       {
         "command": "mymy.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "mymy.createDocumentation",
+        "title": "CreateDocumentation"
+      },
+      {
+        "command": "mymy.editDocumentation",
+        "title": "EditDocumentation"
       }
     ]
   },
@@ -42,6 +50,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "chokidar": "^4.0.3"
+    "chokidar": "^4.0.3",
+    "compile": "^0.0.2"
   }
 }
