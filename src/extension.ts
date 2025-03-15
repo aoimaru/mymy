@@ -138,6 +138,7 @@ $
 \`\`\`
 
 [✏️ 編集する](command:mymy.editDocumentation?${encodeURIComponent(JSON.stringify({ line: line }))})
+[🗑️ 削除する](command:mymy.deleteDocumentation?${encodeURIComponent(JSON.stringify({ line: line }))})
 `;
 
 
@@ -166,6 +167,22 @@ const editDocumentation = async (args: any) => {
     const doc = await vscode.workspace.openTextDocument(contentPath);
     await vscode.window.showTextDocument(doc, { viewColumn: vscode.ViewColumn.Beside });
 
+}
+
+const deleteDocumentation = async (args: any) => {
+	const editor = vscode.window.activeTextEditor;
+	if (!editor) return;
+	// argsでlineプロパティを取得
+	const line = args?.line ?? editor.selection.active.line;
+    const lineText = editor.document.lineAt(line).text;
+    const lineHash = getSha1(lineText);
+	const contentPath = path.join(STORAGE_PATH, lineHash);
+
+	try {
+		await fs.promises.unlink(contentPath)
+	} catch (error: any) {
+		console.log("Error: ", error)
+	}
 }
 
 // TODO: 後からキャッシュに差し替える. 現状はファイルシステムを読み込む
@@ -254,7 +271,8 @@ export const activate = (context: vscode.ExtensionContext) => {
 					}
 				}
 			}
-		}
+		},
+		vscode.commands.registerCommand('mymy.deleteDocumentation', deleteDocumentation)
 	);
 
 	// (初回適用) 現在開いているファイルに対してapplyDecorationsを適用
